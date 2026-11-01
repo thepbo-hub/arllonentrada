@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-navy-main: #082E5A;
+    --color-navy-deep: #04172B;
+    --color-navy-surface: #0B2340;
+    --color-blue-lum: #1687FF;
+    --color-cyan-lum: #42C8FF;
+    --color-white-main: #F5F8FC;
+    --color-gray-sub: #AAB8CA;
+  }
+
+  body {
+    background-color: var(--color-navy-deep);
+    color: var(--color-white-main);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* 3D and Perspective utilities */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Subtle particle float animation */
+@keyframes ambientPulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes sweepReflection {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  30%, 100% {
+    transform: translateX(250%) skewX(-25deg);
+  }
+}
+
+.animate-sweep {
+  animation: sweepReflection 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-ambient-pulse {
+  animation: ambientPulse 8s ease-in-out infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #04172B;
+}
+::-webkit-scrollbar-thumb {
+  background: #0B2340;
+  border-radius: 9999px;
+  border: 1px solid rgba(22, 135, 255, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1687FF;
+}
+
+/* =========================================
+   LÂMINA DE LUZ (LENTA, SUTIL & SINCRONIZADA)
+========================================= */
+
+@keyframes lightBladeSweep {
+  0% {
+    transform: translate3d(-210%, -115%, 0) rotate(35deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.38;
+  }
+  58% {
+    opacity: 0.38;
+  }
+  72% {
+    transform: translate3d(240%, 140%, 0) rotate(35deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(240%, 140%, 0) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+.light-blade-beam {
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 65px;
+  height: 260%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(22, 135, 255, 0.05) 15%,
+    rgba(66, 200, 255, 0.26) 48%,
+    rgba(245, 248, 252, 0.40) 52%,
+    rgba(66, 200, 255, 0.26) 56%,
+    rgba(22, 135, 255, 0.05) 85%,
+    transparent 100%
+  );
+  filter: blur(3.5px);
+  box-shadow: 0 0 20px rgba(66, 200, 255, 0.25);
+  /* Slower pass taking ~5s to cross the card, repeating with calm pause */
+  animation: lightBladeSweep 7.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0s !important;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* =========================================
+   EFEITO LEVITAÇÃO SINCRONIZADA DA CARTA
+========================================= */
+
+@keyframes synchronizedCardFloatMobile {
+  0%, 100% {
+    transform: translate3d(calc(-50% + var(--target-x, 0px)), calc(-50% - 5px), 0px) scale(1) rotateY(0deg);
+  }
+  50% {
+    transform: translate3d(calc(-50% + var(--target-x, 0px)), calc(-50% + 5px), 0px) scale(1) rotateY(0deg);
+  }
+}
+
+@keyframes synchronizedCardFloatDesktop {
+  0%, 100% {
+    transform: translate3d(calc(-50% + var(--desktop-x, 0px)), calc(-50% - 6px), var(--desktop-z, 0px)) scale(var(--desktop-scale, 1)) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: translate3d(calc(-50% + var(--desktop-x, 0px)), calc(-50% + 6px), var(--desktop-z, 0px)) scale(var(--desktop-scale, 1)) rotateX(0deg) rotateY(0deg);
+  }
+}
+
+.orbit-card.is-aligned-floating-mobile {
+  animation: synchronizedCardFloatMobile 3.6s ease-in-out infinite !important;
+  animation-delay: 0s !important;
+}
+
+.orbit-card.is-aligned-floating-desktop {
+  animation: synchronizedCardFloatDesktop 3.6s ease-in-out infinite !important;
+  animation-delay: 0s !important;
+}
+
+
+
+
+/* Reflexo que acompanha o movimento do mouse */
+.orbit-card {
+  --light-x: 50%;
+  --light-y: 50%;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+
+  transform-style: preserve-3d;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    filter 0.5s ease,
+    box-shadow 0.5s ease;
+
+  will-change: transform;
+}
+
+.orbit-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+
+  pointer-events: none;
+  border-radius: inherit;
+
+  background: radial-gradient(
+    circle at var(--light-x, var(--mouse-x, 50%)) var(--light-y, var(--mouse-y, 50%)),
+    rgba(66, 200, 255, .30),
+    rgba(22, 135, 255, .12) 25%,
+    transparent 62%
+  );
+
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.orbit-card.is-interacting::after {
+  opacity: 1;
+}
+
+.orbit-card.is-interacting {
+  filter: brightness(1.08);
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.32),
+    0 0 24px rgba(22, 135, 255, 0.22);
+}
+
+.orbit-card:not(.is-interacting) {
+  transition:
+    filter 0.8s ease,
+    box-shadow 0.8s ease;
+}
+
+@media (hover: none) {
+  .orbit-card::after {
+    transition: opacity 0.5s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-card::after {
+    transition: none;
+  }
+}
+

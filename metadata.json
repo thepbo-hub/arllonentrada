@@ -1,0 +1,6 @@
+{
+  "name": "Arllon Fernandes Barbearia - Hub Digital",
+  "description": "Biosite Principal e Hub Digital 3D interativo da Arllon Fernandes Barbearia. Cortes, Serviços Extras e Produtos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
