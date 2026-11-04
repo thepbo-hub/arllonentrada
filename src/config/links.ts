@@ -4,7 +4,7 @@
  */
 export const biositeLinks = {
   cortes: "https://arlloncortes.vercel.app",
-  extras: "https://arlloncortes.vercel.app/#servicos-extras", // Configurável: insira o link do biosite de Serviços Extras
+  extras: "https://arllonbarbeariabebidas.vercel.app",
   produtos: "https://arlloncatalogo.vercel.app",
 } as const;
 

@@ -68,14 +68,21 @@ export const OrbitalCardsStage: React.FC = () => {
   // Hook for 3D cursor tilt and luminous dynamic radial reflection (desktop)
   useCard3D([desktopState]);
 
-  // Screen size detection
+  // Screen size detection (debounced with passive event listener)
   useEffect(() => {
+    let resizeTimer: number | null = null;
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
+      if (resizeTimer !== null) clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        setIsMobile(window.innerWidth < 640);
+      }, 100);
     };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      if (resizeTimer !== null) clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Check prefers-reduced-motion
@@ -398,18 +405,27 @@ export const OrbitalCardsStage: React.FC = () => {
     };
   }, []);
 
-  // Safe external navigation
+  // Safe external navigation with resilient fallback
   const openBiosite = (url: string) => {
     if (!url || url.includes('INSERIR LINK')) {
       return;
     }
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.warn('[Navigation] Primary navigation intercepted, executing fallback:', err);
+      try {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } catch {
+        // Safe fail-silent
+      }
+    }
   };
 
   return (
